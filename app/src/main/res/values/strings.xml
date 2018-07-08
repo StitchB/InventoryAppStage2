@@ -83,4 +83,12 @@
 
     <!-- Text hint for supplier phone number field in the editor [CHAR LIMIT=30] -->
     <string name="hint_book_supplier_phone_number">Supplier Phone Number</string>
+
+    <!-- List items buttons text [CHAR LIMIT=10] -->
+    <string name="sale_button_text">Sale</string>
+    <string name="increase_quantity_button_text">+ Quantity</string>
+    <string name="decrease_quantity_button_text">- Quantity</string>
+    <string name="order_from_supplier_button_text">Order From Supplier</string>
+    <string name="delete_button_text">Delete Book</string>
+
 </resources>

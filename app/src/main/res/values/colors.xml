@@ -14,4 +14,9 @@
 
     <!-- Primary dark color for the editor -->
     <color name="editorColorPrimaryDark">#20262d</color>
+
+    <!-- List item colors -->
+    <color name="listItemName">#2B3D4D</color>
+    <color name="listItemPrice">#AEB6BD</color>
+    <color name="listItemQunatity">#AEB6BD</color>
 </resources>

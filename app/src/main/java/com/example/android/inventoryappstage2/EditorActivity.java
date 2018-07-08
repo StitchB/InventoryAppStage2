@@ -1,7 +1,9 @@
 package com.example.android.inventoryappstage2;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -13,10 +15,12 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -64,6 +68,14 @@ public class EditorActivity extends AppCompatActivity implements
     private EditText mSupplierPhoneNumberEditText;
 
     /**
+     * Buttons
+     **/
+    private Button increaseQuantityButton;
+    private Button decreaseQuantityButton;
+    private Button orderFromSupplierButton;
+    private Button deleteBookButton;
+
+    /**
      * Boolean flag that keeps track of whether the book has been edited (true) or not (false)
      */
     private boolean mBookHasChanged = false;
@@ -90,6 +102,18 @@ public class EditorActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         mCurrentBookUri = intent.getData();
 
+        // Find all relevant views that we will need to read user input from
+        mNameEditText = findViewById(R.id.edit_book_name);
+        mPriceEditText = findViewById(R.id.edit_book_price);
+        mQuantityEditText = findViewById(R.id.edit_book_quantity);
+        mSupplierNameEditText = findViewById(R.id.edit_book_supplier_name);
+        mSupplierPhoneNumberEditText = findViewById(R.id.edit_book_supplier_phone_number);
+
+        increaseQuantityButton = findViewById(R.id.increase_quantity);
+        decreaseQuantityButton = findViewById(R.id.decrease_quantity);
+        orderFromSupplierButton = findViewById(R.id.order_from_supplier_button);
+        deleteBookButton = findViewById(R.id.delete_button);
+
         // If the intent DOES NOT contain a book content URI, then we know that we are
         // creating a new book.
         if (mCurrentBookUri == null) {
@@ -99,6 +123,12 @@ public class EditorActivity extends AppCompatActivity implements
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete a book that hasn't been created yet.)
             invalidateOptionsMenu();
+
+            //Hide buttons
+            increaseQuantityButton.setVisibility(View.GONE);
+            decreaseQuantityButton.setVisibility(View.GONE);
+            orderFromSupplierButton.setVisibility(View.GONE);
+            deleteBookButton.setVisibility(View.GONE);
         } else {
             // Otherwise this is an existing book, so change app bar to say "Edit Book"
             setTitle(getString(R.string.editor_activity_title_edit_book));
@@ -106,14 +136,13 @@ public class EditorActivity extends AppCompatActivity implements
             // Initialize a loader to read the book data from the database
             // and display the current values in the editor
             getLoaderManager().initLoader(EXISTING_BOOK_LOADER, null, this);
-        }
 
-        // Find all relevant views that we will need to read user input from
-        mNameEditText = findViewById(R.id.edit_book_name);
-        mPriceEditText = findViewById(R.id.edit_book_price);
-        mQuantityEditText = findViewById(R.id.edit_book_quantity);
-        mSupplierNameEditText = findViewById(R.id.edit_book_supplier_name);
-        mSupplierPhoneNumberEditText = findViewById(R.id.edit_book_supplier_phone_number);
+            //Show buttons
+            increaseQuantityButton.setVisibility(View.VISIBLE);
+            decreaseQuantityButton.setVisibility(View.VISIBLE);
+            orderFromSupplierButton.setVisibility(View.VISIBLE);
+            deleteBookButton.setVisibility(View.VISIBLE);
+        }
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -169,11 +198,11 @@ public class EditorActivity extends AppCompatActivity implements
             if (newUri == null) {
                 // If the new content URI is null, then there was an error with insertion.
                 Toast.makeText(this, getString(R.string.editor_insert_book_failed),
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_LONG).show();
             } else {
                 // Otherwise, the insertion was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_insert_book_successful),
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_LONG).show();
             }
         } else {
             // Otherwise this is an EXISTING book, so update the book with content URI: mCurrentBookUri
@@ -186,11 +215,11 @@ public class EditorActivity extends AppCompatActivity implements
             if (rowsAffected == 0) {
                 // If no rows were affected, then there was an error with the update.
                 Toast.makeText(this, getString(R.string.editor_update_book_failed),
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_LONG).show();
             } else {
                 // Otherwise, the update was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_update_book_successful),
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -329,16 +358,51 @@ public class EditorActivity extends AppCompatActivity implements
             // Extract out the value from the Cursor for the given column index
             String currentName = cursor.getString(nameColumnIndex);
             String currentPrice = cursor.getString(priceColumnIndex);
-            String currentQuantity = cursor.getString(quantityColumnIndex);
+            final int currentQuantity = cursor.getInt(quantityColumnIndex);
             String currentSupplierName = cursor.getString(supplierNameColumnIndex);
-            String currentSupplierPhoneNumber = cursor.getString(supplierPhoneNumberColumnIndex);
+            final String currentSupplierPhoneNumber = cursor.getString(supplierPhoneNumberColumnIndex);
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(currentName);
             mPriceEditText.setText(currentPrice);
-            mQuantityEditText.setText(currentQuantity);
+            mQuantityEditText.setText(Integer.toString(currentQuantity));
             mSupplierNameEditText.setText(currentSupplierName);
             mSupplierPhoneNumberEditText.setText(currentSupplierPhoneNumber);
+
+            //Increase button onclick listener
+            increaseQuantityButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int quantity = Integer.parseInt(mQuantityEditText.getText().toString());
+                    updateQuantity(quantity, false);
+                }
+            });
+
+            //Increase button onclick listener
+            decreaseQuantityButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int quantity = Integer.parseInt(mQuantityEditText.getText().toString());
+                    updateQuantity(quantity, true);
+                }
+            });
+
+            //Delete button onclick listener
+            deleteBookButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDeleteConfirmationDialog();
+                }
+            });
+
+            //Order from supplier button onclick listener
+            orderFromSupplierButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", currentSupplierPhoneNumber, null));
+                    startActivity(intent);
+                }
+            });
         }
     }
 
@@ -386,7 +450,7 @@ public class EditorActivity extends AppCompatActivity implements
      */
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the postivie and negative buttons on the dialog.
+        // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
@@ -425,15 +489,49 @@ public class EditorActivity extends AppCompatActivity implements
             if (rowsDeleted == 0) {
                 // If no rows were deleted, then there was an error with the delete.
                 Toast.makeText(this, getString(R.string.editor_delete_book_failed),
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_LONG).show();
             } else {
                 // Otherwise, the delete was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_delete_book_successful),
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_LONG).show();
             }
         }
 
         // Close the activity
         finish();
+    }
+
+    public void updateQuantity(int quantity, boolean decrease) {
+        //Decrease or increase quantity
+        if (decrease) {
+            quantity--;
+        } else {
+            quantity++;
+        }
+        // Only perform the update if this is an existing book.
+        if (mCurrentBookUri != null) {
+            if (quantity >= 0) {
+                ContentValues values = new ContentValues();
+                values.put(BookEntry.COLUMN_PRODUCT_QUANTITY, quantity);
+
+                // Call the ContentResolver to update the book at the given content URI.
+                // Pass in null for the selection and selection args because the mCurrentBookUri
+                // content URI already identifies the book that we want.
+                int rowsAffected = getContentResolver().update(mCurrentBookUri, values, null, null);
+
+                // Show a toast message depending on whether or not the update was successful.
+                if (rowsAffected == 0) {
+                    // If no rows were updated, then there was an error with the update.
+                    Toast.makeText(this, "Error while increasing quantity.",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    // Otherwise, the update was successful and we can display a toast.
+                    Toast.makeText(this, "Quantity has been increased.",
+                            Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "This book already has 0 quantity.", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

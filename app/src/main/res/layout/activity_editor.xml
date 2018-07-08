@@ -47,6 +47,19 @@
                 style="@style/EditorFieldStyle"
                 android:hint="@string/hint_book_quantity"
                 android:inputType="number" />
+
+            <!-- Increase/decrease quantity -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/increase_quantity"
+                    style="@style/ListItemIncreaseQuantityButton"/>
+                <Button
+                    android:id="@+id/decrease_quantity"
+                    style="@style/ListItemDecreaseQuantityButton"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
@@ -84,5 +97,13 @@
                 android:inputType="phone" />
         </LinearLayout>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/order_from_supplier_button"
+        style="@style/ListItemOrderFromSupplierButton"/>
+
+    <Button
+        android:id="@+id/delete_button"
+        style="@style/ListItemDeleteButton"/>
 
 </LinearLayout>

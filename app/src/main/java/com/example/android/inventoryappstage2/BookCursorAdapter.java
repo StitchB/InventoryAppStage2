@@ -1,10 +1,12 @@
 package com.example.android.inventoryappstage2;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
@@ -53,21 +55,40 @@ public class BookCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
         TextView nameTextView = view.findViewById(R.id.name);
-        TextView supplierNameTextView = view.findViewById(R.id.supplier_name);
+        TextView priceTextView = view.findViewById(R.id.price);
+        TextView quantityTextView = view.findViewById(R.id.quantity);
 
         // Find the columns of book attributes that we're interested in
+        final int idColumnIndex = cursor.getColumnIndex(BookEntry._ID);
         int nameColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_PRODUCT_NAME);
-        int supplierNameColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_PRODUCT_SUPPLIER_NAME);
+        int priceColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_PRODUCT_PRICE);
+        int quantityColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_PRODUCT_QUANTITY);
 
         // Read the book attributes from the Cursor for the current book
         String bookName = cursor.getString(nameColumnIndex);
-        String bookSupplierName = cursor.getString(supplierNameColumnIndex);
+        String bookPrice = cursor.getString(priceColumnIndex);
+        final int bookQuantity = cursor.getInt(quantityColumnIndex);
 
         // Update the TextViews with the attributes for the current book
         nameTextView.setText(bookName);
-        supplierNameTextView.setText(bookSupplierName);
+        priceTextView.setText("Price: $" + bookPrice);
+        quantityTextView.setText("Quantity: " + bookQuantity);
+
+        //Book ID & quantity
+        final int bookID = cursor.getInt(idColumnIndex);
+        final int quantity = cursor.getInt(quantityColumnIndex);
+
+        //Sale button
+        Button saleButton = view.findViewById(R.id.sale_button);
+        saleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CatalogActivity Activity = (CatalogActivity) context;
+                Activity.doSale(bookID, quantity);
+            }
+        });
     }
 }

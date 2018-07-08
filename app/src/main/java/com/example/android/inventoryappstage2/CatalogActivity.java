@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.android.inventoryappstage2.data.BookContract.BookEntry;
 
@@ -171,5 +172,25 @@ public class CatalogActivity extends AppCompatActivity implements
     public void onLoaderReset(Loader<Cursor> loader) {
         // Callback called when the data needs to be deleted
         mCursorAdapter.swapCursor(null);
+    }
+
+    public void doSale(int bookID, int quantity) {
+        //Decrease quantity
+        quantity--;
+
+        //If book is still available
+        if (quantity >= 0) {
+            // Create a ContentValues object where column names are the keys,
+            // and new book attributes are the values.
+            ContentValues values = new ContentValues();
+            values.put(BookEntry.COLUMN_PRODUCT_QUANTITY, quantity);
+            Uri updateUri = ContentUris.withAppendedId(BookEntry.CONTENT_URI, bookID);
+            int rowsAffected = getContentResolver().update(updateUri, values, null, null);
+            if (rowsAffected == 0) {
+                Toast.makeText(this, "This book has been sold.", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(this, "This book is not available any more.", Toast.LENGTH_LONG).show();
+        }
     }
 }
