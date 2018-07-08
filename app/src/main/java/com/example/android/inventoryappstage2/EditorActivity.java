@@ -165,6 +165,39 @@ public class EditorActivity extends AppCompatActivity implements
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supplierNameString = mSupplierNameEditText.getText().toString().trim();
         String supplierPhoneNumberString = mSupplierPhoneNumberEditText.getText().toString().trim();
+
+        //If any of required fields are empty
+        if(TextUtils.isEmpty(nameString)) {
+            Toast.makeText(this, getString(R.string.name_cannot_be_empty),
+                    Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        if(TextUtils.isEmpty(priceString)) {
+            Toast.makeText(this, getString(R.string.price_cannot_be_empty),
+                    Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        if(TextUtils.isEmpty(supplierNameString)) {
+            Toast.makeText(this, getString(R.string.supplier_name_cannot_be_empty),
+                    Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        if(TextUtils.isEmpty(supplierPhoneNumberString)) {
+            Toast.makeText(this, getString(R.string.supplier_phone_number_cannot_be_empty),
+                    Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        //If quantity is empty
+        if(TextUtils.isEmpty(quantityString)) {
+            quantityString = "0";
+        }
+
+        //Prepare quantity & supplier phone number
         Long quantity = Long.parseLong(quantityString);
         Long supplierPhoneNumber = Long.parseLong(supplierPhoneNumberString);
 
@@ -373,7 +406,9 @@ public class EditorActivity extends AppCompatActivity implements
             increaseQuantityButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int quantity = Integer.parseInt(mQuantityEditText.getText().toString());
+                    String quantityString = mQuantityEditText.getText().toString();
+                    String stringValue = quantityString.matches("") ? "0" : quantityString;
+                    int quantity = Integer.parseInt(stringValue);
                     updateQuantity(quantity, false);
                 }
             });
@@ -382,7 +417,12 @@ public class EditorActivity extends AppCompatActivity implements
             decreaseQuantityButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int quantity = Integer.parseInt(mQuantityEditText.getText().toString());
+                    String quantityString = mQuantityEditText.getText().toString();
+                    if(quantityString.matches("")){
+                        mQuantityEditText.setText("0");
+                    }
+                    String stringValue = quantityString.matches("") ? "0" : quantityString;
+                    int quantity = Integer.parseInt(stringValue);
                     updateQuantity(quantity, true);
                 }
             });

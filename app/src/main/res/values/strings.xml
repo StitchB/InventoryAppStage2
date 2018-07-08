@@ -70,19 +70,19 @@
     <string name="section_supplier">Supplier</string>
 
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_book_name">Name</string>
+    <string name="hint_book_name">Name (required)</string>
 
     <!-- Text hint for price field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_book_price">Price</string>
+    <string name="hint_book_price">Price (required)</string>
 
     <!-- Text hint for quantity field in the editor [CHAR LIMIT=30] -->
     <string name="hint_book_quantity">Quantity</string>
 
     <!-- Text hint for supplier name field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_book_supplier_name">Supplier Name</string>
+    <string name="hint_book_supplier_name">Supplier Name (required)</string>
 
     <!-- Text hint for supplier phone number field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_book_supplier_phone_number">Supplier Phone Number</string>
+    <string name="hint_book_supplier_phone_number">Supplier Phone Number (required)</string>
 
     <!-- List items buttons text [CHAR LIMIT=10] -->
     <string name="sale_button_text">Sale</string>
@@ -91,4 +91,9 @@
     <string name="order_from_supplier_button_text">Order From Supplier</string>
     <string name="delete_button_text">Delete Book</string>
 
+    <!-- Required values [CHAR LIMIT=50] -->
+    <string name="name_cannot_be_empty">Name cannot be empty</string>
+    <string name="price_cannot_be_empty">Price cannot be empty</string>
+    <string name="supplier_name_cannot_be_empty">Supplier name cannot be empty</string>
+    <string name="supplier_phone_number_cannot_be_empty">Supplier phone number cannot be empty</string>
 </resources>
